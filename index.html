@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ăn Gì Đây? - Food Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .wheel-container { position: relative; width: 260px; height: 260px; margin: 0 auto; }
+    #wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #8b5cf6; transition: transform 3s cubic-bezier(0.15, 0.99, 0.18, 0.99); }
+    .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #ef4444; z-index: 10; }
+  </style>
+</head>
+<body class="bg-purple-50 text-slate-800 pb-20">
+
+  <!-- Header -->
+  <div class="p-6 bg-white rounded-b-3xl shadow-sm flex justify-between items-center sticky top-0 z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center text-xl">🍜</div>
+      <div>
+        <p class="text-xs text-slate-400 font-medium">Hôm nay ăn gì?</p>
+        <h1 class="text-lg font-bold text-slate-800">Foodie App ✨</h1>
+      </div>
+    </div>
+    <button onclick="toggleModal()" class="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-md active:scale-95 transition">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+
+  <!-- TAB 1: DASHBOARD (DANH SÁCH QUÁN) -->
+  <div id="tab-home" class="p-5 space-y-6">
+    
+    <!-- Bộ Lọc -->
+    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <button onclick="filterDistrict('all')" class="px-4 py-2 bg-purple-600 text-white rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Tất cả</button>
+      <button onclick="filterDistrict('Quận 1')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Quận 1</button>
+      <button onclick="filterDistrict('Quận 3')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Quận 3</button>
+      <button onclick="filterDistrict('Bình Thạnh')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Bình Thạnh</button>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="food-list" class="grid grid-cols-1 gap-4">
+      <!-- Dữ liệu mẫu sẽ tự render ở đây -->
+    </div>
+  </div>
+
+  <!-- TAB 2: VÒNG QUAY MAY MẮN -->
+  <div id="tab-wheel" class="p-5 space-y-6 hidden text-center">
+    <h2 class="text-xl font-bold text-slate-800">Vòng Quay Chọn Quán 🎡</h2>
+    <p class="text-xs text-slate-500">Phân vân không biết ăn gì? Để vũ trụ chọn giúp bạn!</p>
+    
+    <div class="py-6">
+      <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="260" height="260"></canvas>
+      </div>
+    </div>
+
+    <button onclick="spinWheel()" class="px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg active:scale-95 transition">
+      QUAY NGAY 🚀
+    </button>
+    <h3 id="wheel-result" class="text-lg font-bold text-purple-700 min-h-[28px] mt-4"></h3>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR (Chuẩn Mobile) -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t py-3 px-8 flex justify-around items-center z-20">
+    <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-purple-600">
+      <i class="fa-solid fa-compass text-xl"></i>
+      <span class="text-[10px] font-bold mt-1">Khám phá</span>
+    </button>
+    <button onclick="switchTab('wheel')" id="nav-wheel" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-circle-dot text-xl"></i>
+      <span class="text-[10px] font-bold mt-1">Vòng quay</span>
+    </button>
+  </div>
+
+  <!-- MODAL THÊM QUÁN -->
+  <div id="add-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 animate-slide-up">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Thêm Quán Ăn Mới</h3>
+        <button onclick="toggleModal()" class="text-slate-400 text-xl">&times;</button>
+      </div>
+      <input id="input-name" type="text" placeholder="Tên quán..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+      <input id="input-district" type="text" placeholder="Quận/Khu vực (VD: Quận 1)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+      <input id="input-rating" type="number" step="0.1" placeholder="Rating Google (VD: 4.5)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+      <input id="input-img" type="text" placeholder="Link ảnh (URL)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
+      <button onclick="addRestaurant()" class="w-full py-3 bg-purple-600 text-white font-bold rounded-xl shadow-md">Lưu Quán</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    let restaurants = [
+      { id: 1, name: 'Phở Hòa Pasteur', district: 'Quận 3', rating: 4.6, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500' },
+      { id: 2, name: 'Bánh Mì Huỳnh Hoa', district: 'Quận 1', rating: 4.5, img: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500' },
+      { id: 3, name: 'Cơm Tấm Ba Há', district: 'Bình Thạnh', rating: 4.8, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500' }
+    ];
+
+    function renderList(data = restaurants) {
+      const container = document.getElementById('food-list');
+      container.innerHTML = data.map(res => `
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-purple-50 flex gap-4 items-center">
+          <img src="${res.img}" class="w-20 h-20 rounded-2xl object-cover bg-slate-100">
+          <div class="flex-1 space-y-1">
+            <span class="px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold">${res.district}</span>
+            <h3 class="font-bold text-slate-800">${res.name}</h3>
+            <p class="text-xs text-amber-500 font-bold">⭐ ${res.rating} Google</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterDistrict(district) {
+      if (district === 'all') renderList(restaurants);
+      else renderList(restaurants.filter(r => r.district === district));
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tab-home').classList.toggle('hidden', tab !== 'home');
+      document.getElementById('tab-wheel').classList.toggle('hidden', tab !== 'wheel');
+      document.getElementById('nav-home').className = tab === 'home' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
+      document.getElementById('nav-wheel').className = tab === 'wheel' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
+      if(tab === 'wheel') drawWheel();
+    }
+
+    function toggleModal() {
+      document.getElementById('add-modal').classList.toggle('hidden');
+    }
+
+    function addRestaurant() {
+      const name = document.getElementById('input-name').value;
+      const district = document.getElementById('input-district').value;
+      const rating = document.getElementById('input-rating').value || '4.0';
+      const img = document.getElementById('input-img').value || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500';
+      if(name && district) {
+        restaurants.push({ id: Date.now(), name, district, rating, img });
+        renderList();
+        toggleModal();
+        alert('Đã thêm quán thành công!');
+      }
+    }
+
+    // Canvas Wheel Logic
+    function drawWheel() {
+      const canvas = document.getElementById('wheel');
+      const ctx = canvas.getContext('2d');
+      const colors = ['#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#38bdf8'];
+      const slice = (2 * Math.PI) / restaurants.length;
+
+      ctx.clearRect(0, 0, 260, 260);
+      restaurants.forEach((res, i) => {
+        ctx.beginPath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.moveTo(130, 130);
+        ctx.arc(130, 130, 130, i * slice, (i + 1) * slice);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(130, 130);
+        ctx.rotate(i * slice + slice / 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(res.name.substring(0, 10), 40, 5);
+        ctx.restore();
+      });
+    }
+
+    let currentRotation = 0;
+    function spinWheel() {
+      const wheel = document.getElementById('wheel');
+      const randomDegree = Math.floor(1800 + Math.random() * 360);
+      currentRotation += randomDegree;
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      
+      setTimeout(() => {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        const selectedIndex = Math.floor((360 - (currentRotation % 360)) / (360 / restaurants.length)) % restaurants.length;
+        document.getElementById('wheel-result').innerText = `🎉 Ăn ngay: ${restaurants[selectedIndex].name}!`;
+      }, 3000);
+    }
+
+    renderList();
+  </script>
+</body>
+</html>

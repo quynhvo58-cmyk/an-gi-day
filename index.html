@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ăn Gì Đây? - Food Tracker</title>
+  <title>Foodie App - Ăn Gì Đây?</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .wheel-container { position: relative; width: 260px; height: 260px; margin: 0 auto; }
-    #wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #8b5cf6; transition: transform 3s cubic-bezier(0.15, 0.99, 0.18, 0.99); }
-    .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #ef4444; z-index: 10; }
+    .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto; }
+    #wheel { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #8b5cf6; transition: transform 3.5s cubic-bezier(0.15, 0.99, 0.18, 0.99); }
+    .pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid #ef4444; z-index: 10; }
   </style>
 </head>
-<body class="bg-purple-50 text-slate-800 pb-20">
+<body class="bg-purple-50 text-slate-800 pb-24">
 
   <!-- Header -->
-  <div class="p-6 bg-white rounded-b-3xl shadow-sm flex justify-between items-center sticky top-0 z-20">
+  <div class="p-5 bg-white rounded-b-3xl shadow-sm flex justify-between items-center sticky top-0 z-20">
     <div class="flex items-center gap-3">
       <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center text-xl">🍜</div>
       <div>
@@ -25,146 +25,436 @@
         <h1 class="text-lg font-bold text-slate-800">Foodie App ✨</h1>
       </div>
     </div>
-    <button onclick="toggleModal()" class="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-md active:scale-95 transition">
-      <i class="fa-solid fa-plus"></i>
-    </button>
   </div>
 
-  <!-- TAB 1: DASHBOARD (DANH SÁCH QUÁN) -->
-  <div id="tab-home" class="p-5 space-y-6">
+  <!-- TAB 1: KHÁM PHÁ -->
+  <div id="tab-home" class="p-5 space-y-5">
     
-    <!-- Bộ Lọc -->
-    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      <button onclick="filterDistrict('all')" class="px-4 py-2 bg-purple-600 text-white rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Tất cả</button>
-      <button onclick="filterDistrict('Quận 1')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Quận 1</button>
-      <button onclick="filterDistrict('Quận 3')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Quận 3</button>
-      <button onclick="filterDistrict('Bình Thạnh')" class="px-4 py-2 bg-white text-slate-600 rounded-2xl text-xs font-semibold whitespace-nowrap shadow-sm">Bình Thạnh</button>
+    <!-- Bộ Lọc Dropdown -->
+    <div class="bg-white p-4 rounded-3xl shadow-sm space-y-3 border border-purple-100">
+      <h2 class="text-xs font-bold text-purple-600 uppercase tracking-wider"><i class="fa-solid fa-filter mr-1"></i> Bộ lọc tìm kiếm</h2>
+      <div class="grid grid-cols-2 gap-2">
+        <!-- Dropdown Quận -->
+        <div>
+          <label class="text-[11px] text-slate-400 font-semibold mb-1 block">Khu vực / Quận</label>
+          <select id="filter-district" class="w-full p-2.5 bg-slate-100 rounded-xl text-xs font-semibold outline-none border border-transparent focus:border-purple-400">
+            <option value="all">Tất cả các Quận</option>
+            <option value="Quận 1">Quận 1</option>
+            <option value="Quận 3">Quận 3</option>
+            <option value="Quận 4">Quận 4</option>
+            <option value="Quận 5">Quận 5</option>
+            <option value="Quận 7">Quận 7</option>
+            <option value="Quận 10">Quận 10</option>
+            <option value="Quận 12">Quận 12</option>
+            <option value="Bình Thạnh">Bình Thạnh</option>
+            <option value="Tân Bình">Tân Bình</option>
+            <option value="Thủ Đức">Thủ Đức</option>
+          </select>
+        </div>
+
+        <!-- Dropdown Loại đồ ăn -->
+        <div>
+          <label class="text-[11px] text-slate-400 font-semibold mb-1 block">Loại món ăn</label>
+          <select id="filter-category" class="w-full p-2.5 bg-slate-100 rounded-xl text-xs font-semibold outline-none border border-transparent focus:border-purple-400">
+            <option value="all">Tất cả thể loại</option>
+            <option value="kho">Món Khô (Cơm, Bánh mì...)</option>
+            <option value="nuoc">Món Nước (Hủ tiếu, Bún bò...)</option>
+            <option value="han">Đồ Hàn Quốc</option>
+            <option value="trung">Đồ Trung Quốc</option>
+            <option value="tay">Đồ Tây / Âu</option>
+            <option value="an_vat">Ăn vặt / Cà phê</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="searchRestaurants()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs shadow-md active:scale-95 transition">
+        <i class="fa-solid fa-magnifying-glass mr-1"></i> Tìm Quán Ngay
+      </button>
     </div>
 
-    <!-- Cards Grid -->
-    <div id="food-list" class="grid grid-cols-1 gap-4">
-      <!-- Dữ liệu mẫu sẽ tự render ở đây -->
+    <!-- Danh Sách Quán Kết Quả -->
+    <div class="space-y-3">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Kết quả đề xuất (<span id="count-res">0</span>)</h3>
+      <div id="food-list" class="space-y-3"></div>
     </div>
   </div>
 
-  <!-- TAB 2: VÒNG QUAY MAY MẮN -->
-  <div id="tab-wheel" class="p-5 space-y-6 hidden text-center">
-    <h2 class="text-xl font-bold text-slate-800">Vòng Quay Chọn Quán 🎡</h2>
-    <p class="text-xs text-slate-500">Phân vân không biết ăn gì? Để vũ trụ chọn giúp bạn!</p>
-    
-    <div class="py-6">
+  <!-- TAB 2: LỊCH SỬ & NHẬT KÝ -->
+  <div id="tab-history" class="p-5 space-y-5 hidden">
+    <!-- Sub Nav Lịch sử -->
+    <div class="flex bg-slate-200/60 p-1 rounded-2xl text-xs font-bold">
+      <button onclick="switchHistorySubTab('logs')" id="subnav-logs" class="flex-1 py-2 rounded-xl bg-white text-purple-600 shadow-sm transition">
+        📸 Nhật Ký Đã Ăn
+      </button>
+      <button onclick="switchHistorySubTab('saved')" id="subnav-saved" class="flex-1 py-2 rounded-xl text-slate-500 transition">
+        ⭐ Quán Đã Lưu
+      </button>
+    </div>
+
+    <!-- Subtab 1: Nhật ký upload -->
+    <div id="subtab-logs" class="space-y-4">
+      <button onclick="toggleUploadModal()" class="w-full py-3 bg-white border-2 border-dashed border-purple-300 rounded-2xl text-purple-600 text-xs font-bold flex items-center justify-center gap-2 hover:bg-purple-50 transition">
+        <i class="fa-solid fa-cloud-arrow-up text-lg"></i> Check-in Quán Vừa Ăn
+      </button>
+
+      <div id="user-logs-list" class="space-y-3"></div>
+    </div>
+
+    <!-- Subtab 2: Quán đã bookmark -->
+    <div id="subtab-saved" class="space-y-3 hidden">
+      <div id="saved-list" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: VÒNG QUAY -->
+  <div id="tab-wheel" class="p-5 space-y-5 hidden text-center">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800">Vòng Quay Món Ăn 🎡</h2>
+      <p class="text-xs text-slate-500 mt-1">Đã tự động xáo trộn 10 món ngẫu nhiên cho bạn!</p>
+    </div>
+
+    <div class="py-2">
       <div class="wheel-container">
         <div class="pointer"></div>
-        <canvas id="wheel" width="260" height="260"></canvas>
+        <canvas id="wheel" width="280" height="280"></canvas>
       </div>
     </div>
 
-    <button onclick="spinWheel()" class="px-8 py-3 bg-purple-600 text-white font-bold rounded-full shadow-lg active:scale-95 transition">
-      QUAY NGAY 🚀
+    <button onclick="spinWheel()" class="px-8 py-3 bg-purple-600 text-white font-bold text-sm rounded-full shadow-lg active:scale-95 transition">
+      QUAY MÓN ĂN 🚀
     </button>
-    <h3 id="wheel-result" class="text-lg font-bold text-purple-700 min-h-[28px] mt-4"></h3>
+    
+    <div id="wheel-result-box" class="hidden bg-white p-4 rounded-3xl border border-purple-100 shadow-sm space-y-3 text-left">
+      <p class="text-xs font-semibold text-purple-600 uppercase">Món trúng thưởng:</p>
+      <h3 id="wheel-result-title" class="text-lg font-bold text-slate-800"></h3>
+      <hr>
+      <p class="text-xs font-bold text-slate-500">Đề xuất quán có rating cao bán món này:</p>
+      <div id="wheel-recommend-list" class="space-y-2"></div>
+    </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR (Chuẩn Mobile) -->
-  <div class="fixed bottom-0 left-0 right-0 bg-white border-t py-3 px-8 flex justify-around items-center z-20">
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t py-2 px-6 flex justify-around items-center z-20 shadow-lg">
     <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-purple-600">
-      <i class="fa-solid fa-compass text-xl"></i>
+      <i class="fa-solid fa-compass text-lg"></i>
       <span class="text-[10px] font-bold mt-1">Khám phá</span>
     </button>
+    <button onclick="switchTab('history')" id="nav-history" class="flex flex-col items-center text-slate-400">
+      <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Lịch sử</span>
+    </button>
     <button onclick="switchTab('wheel')" id="nav-wheel" class="flex flex-col items-center text-slate-400">
-      <i class="fa-solid fa-circle-dot text-xl"></i>
+      <i class="fa-solid fa-bullseye text-lg"></i>
       <span class="text-[10px] font-bold mt-1">Vòng quay</span>
     </button>
   </div>
 
-  <!-- MODAL THÊM QUÁN -->
-  <div id="add-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 animate-slide-up">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-lg">Thêm Quán Ăn Mới</h3>
-        <button onclick="toggleModal()" class="text-slate-400 text-xl">&times;</button>
+  <!-- MODAL CHI TIẾT QUÁN -->
+  <div id="detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[85vh] overflow-y-auto p-5 space-y-4 animate-slide-up">
+      <div class="flex justify-between items-start">
+        <div>
+          <span id="detail-category" class="px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold"></span>
+          <h2 id="detail-name" class="text-lg font-bold text-slate-800 mt-1"></h2>
+        </div>
+        <button onclick="closeDetailModal()" class="text-slate-400 text-2xl">&times;</button>
       </div>
-      <input id="input-name" type="text" placeholder="Tên quán..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-      <input id="input-district" type="text" placeholder="Quận/Khu vực (VD: Quận 1)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-      <input id="input-rating" type="number" step="0.1" placeholder="Rating Google (VD: 4.5)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-      <input id="input-img" type="text" placeholder="Link ảnh (URL)..." class="w-full p-3 bg-slate-100 rounded-xl text-sm outline-none">
-      <button onclick="addRestaurant()" class="w-full py-3 bg-purple-600 text-white font-bold rounded-xl shadow-md">Lưu Quán</button>
+      
+      <img id="detail-img" class="w-full h-44 object-cover rounded-2xl">
+      
+      <div class="space-y-2 text-xs text-slate-600">
+        <p><i class="fa-solid fa-location-dot text-purple-500 w-4"></i> <span id="detail-address"></span></p>
+        <p><i class="fa-solid fa-star text-amber-400 w-4"></i> <span id="detail-rating"></span> trên Google Maps</p>
+        <p><i class="fa-solid fa-route text-blue-500 w-4"></i> Khoảng cách: <strong id="detail-distance" class="text-slate-800">Đang tính...</strong></p>
+      </div>
+
+      <div class="bg-slate-50 p-3 rounded-2xl border space-y-1">
+        <p class="text-[11px] font-bold text-slate-700"><i class="fa-solid fa-quote-left text-purple-400 mr-1"></i> Review nổi bật từ Google:</p>
+        <p id="detail-review" class="text-xs text-slate-500 italic"></p>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button id="btn-save-restaurant" onclick="" class="flex-1 py-3 bg-purple-100 text-purple-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1">
+          <i class="fa-regular fa-bookmark"></i> Lưu Quán
+        </button>
+        <a id="btn-gmap" target="_blank" class="flex-1 py-3 bg-purple-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 text-center">
+          <i class="fa-solid fa-map-location-dot"></i> Xem Google Maps
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- SCRIPT LOGIC -->
+  <!-- MODAL CHECK-IN / UPLOAD QUÁN -->
+  <div id="upload-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 animate-slide-up">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-base">Check-in Nhật Ký Ăn Uống</h3>
+        <button onclick="toggleUploadModal()" class="text-slate-400 text-2xl">&times;</button>
+      </div>
+      
+      <input id="log-name" type="text" placeholder="Tên quán từng đi..." class="w-full p-2.5 bg-slate-100 rounded-xl text-xs outline-none">
+      <input id="log-price" type="text" placeholder="Giá dao động (VD: 40k - 80k)..." class="w-full p-2.5 bg-slate-100 rounded-xl text-xs outline-none">
+      <textarea id="log-note" placeholder="Ghi chú (Món ngon nên thử, không gian...)" class="w-full p-2.5 bg-slate-100 rounded-xl text-xs outline-none h-20"></textarea>
+
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 block mb-1">Tải ảnh đồ ăn / Menu từ điện thoại:</label>
+        <input id="log-file" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200">
+      </div>
+
+      <button onclick="saveLog()" class="w-full py-3 bg-purple-600 text-white font-bold text-xs rounded-xl shadow-md">
+        Lưu Nhật Ký
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    let restaurants = [
-      { id: 1, name: 'Phở Hòa Pasteur', district: 'Quận 3', rating: 4.6, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500' },
-      { id: 2, name: 'Bánh Mì Huỳnh Hoa', district: 'Quận 1', rating: 4.5, img: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500' },
-      { id: 3, name: 'Cơm Tấm Ba Há', district: 'Bình Thạnh', rating: 4.8, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500' }
+    // Dữ liệu mẫu cơ sở dữ liệu các quán ăn
+    const allRestaurants = [
+      { id: 1, name: 'Bánh Mì Huỳnh Hoa', district: 'Quận 1', cat: 'kho', foodName: 'Bánh Mì', rating: 4.5, address: '26 Lê Thị Riêng, P. Bến Thành, Q.1', lat: 10.7713, lng: 106.6925, img: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500', review: 'Bánh mì siêu đầy đặn, pate ngon xuất sắc dù giá hơi cao.' },
+      { id: 2, name: 'Phở Hòa Pasteur', district: 'Quận 3', cat: 'nuoc', foodName: 'Phở Bò', rating: 4.6, address: '260C Pasteur, Phường 8, Q.3', lat: 10.7876, lng: 106.6892, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500', review: 'Nước dùng thanh ngọt chuẩn vị truyền thống, thịt bò tươi ngon.' },
+      { id: 3, name: 'Cơm Tấm Ba Há', district: 'Bình Thạnh', cat: 'kho', foodName: 'Cơm Tấm', rating: 4.8, address: '389 Vũ Tùng, Phường 2, Bình Thạnh', lat: 10.8012, lng: 106.6985, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500', review: 'Sườn nướng thảo mộc siêu thơm, chả trứng siêu béo ngậy.' },
+      { id: 4, name: 'Bún Bò Huế Út Hưng', district: 'Quận 10', cat: 'nuoc', foodName: 'Bún Bò Huế', rating: 4.7, address: '606/88 3 Tháng 2, Phường 14, Q.10', lat: 10.7675, lng: 106.6598, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500', review: 'Nước lèo đậm đà mùi mắm ruốc, sa tế thơm nức mũi.' },
+      { id: 5, name: 'Mì Cay Sasin', district: 'Thủ Đức', cat: 'han', foodName: 'Mì Cay Hàn Quốc', rating: 4.4, address: '255 Võ Văn Ngân, Thủ Đức', lat: 10.8505, lng: 106.7719, img: 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=500', review: 'Mì cay đậm vị, hải sản tươi, nhiều cấp độ thử thách.' },
+      { id: 6, name: 'Dimsum Tiệm Bánh Bao', district: 'Quận 5', cat: 'trung', foodName: 'Dimsum Trung Hoa', rating: 4.6, address: '122 Nguyễn Trãi, Q.5', lat: 10.7548, lng: 106.6782, img: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500', review: 'Há háo vỏ mỏng nhân tôm giòn bụp, bánh bao kim sa siêu ngon.' },
+      { id: 7, name: 'Pizza 4P\'s', district: 'Quận 1', cat: 'tay', foodName: 'Pizza / Đồ Tây', rating: 4.9, address: '8/15 Lê Thánh Tôn, Q.1', lat: 10.7788, lng: 106.7032, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500', review: 'Pizza phô mai Burrata ngon trần đời, phục vụ tuyệt vời.' },
+      { id: 8, name: 'Hủ Tiếu Nam Vang Nhân Quán', district: 'Tân Bình', cat: 'nuoc', foodName: 'Hủ Tiếu Nam Vang', rating: 4.5, address: '122 Âu Cơ, Tân Bình', lat: 10.7725, lng: 106.6490, img: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=500', review: 'Hủ tiếu khô trộn sốt đậm đà, tôm thịt tươi roi rói.' }
     ];
 
-    function renderList(data = restaurants) {
+    // Kho Món Ăn Cho Vòng Quay (Sẽ random 10 món)
+    const masterFoodPool = [
+      'Bánh Mì', 'Phở Bò', 'Cơm Tấm', 'Bún Bò Huế', 'Mì Cay Hàn Quốc', 
+      'Dimsum Trung Hoa', 'Pizza / Đồ Tây', 'Hủ Tiếu Nam Vang', 'Lẩu Thái', 'Bún Thịt Nướng',
+      'Gà Rán', 'Bún Đậu Mắm Tôm', 'Cà Phê Muối', 'Trà Sữa'
+    ];
+
+    let currentWheelFoods = [];
+    let savedRestaurantIds = JSON.parse(localStorage.getItem('saved_res') || '[]');
+    let userLogs = JSON.parse(localStorage.getItem('user_logs') || '[]');
+    let userCoords = null;
+
+    // Lấy vị trí GPS hiện tại
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      });
+    }
+
+    // Khởi tạo app
+    window.onload = function() {
+      searchRestaurants();
+      initRandomWheel();
+      renderLogs();
+      renderSaved();
+    };
+
+    // Tìm kiếm / Lọc danh sách
+    function searchRestaurants() {
+      const dist = document.getElementById('filter-district').value;
+      const cat = document.getElementById('filter-category').value;
+
+      const filtered = allRestaurants.filter(r => {
+        const matchDist = dist === 'all' || r.district === dist;
+        const matchCat = cat === 'all' || r.cat === cat;
+        return matchDist && matchCat;
+      });
+
+      document.getElementById('count-res').innerText = filtered.length;
       const container = document.getElementById('food-list');
-      container.innerHTML = data.map(res => `
-        <div class="bg-white rounded-3xl p-4 shadow-sm border border-purple-50 flex gap-4 items-center">
-          <img src="${res.img}" class="w-20 h-20 rounded-2xl object-cover bg-slate-100">
+      
+      if(filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">Không tìm thấy quán phù hợp điều kiện lọc.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(r => `
+        <div onclick="openDetailModal(${r.id})" class="bg-white rounded-3xl p-3 shadow-sm border border-purple-50 flex gap-3 items-center active:scale-98 transition">
+          <img src="${r.img}" class="w-20 h-20 rounded-2xl object-cover bg-slate-100">
           <div class="flex-1 space-y-1">
-            <span class="px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold">${res.district}</span>
-            <h3 class="font-bold text-slate-800">${res.name}</h3>
-            <p class="text-xs text-amber-500 font-bold">⭐ ${res.rating} Google</p>
+            <div class="flex justify-between items-center">
+              <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[9px] font-bold">${r.district}</span>
+              <span class="text-xs font-bold text-amber-500">⭐ ${r.rating}</span>
+            </div>
+            <h3 class="font-bold text-xs text-slate-800 line-clamp-1">${r.name}</h3>
+            <p class="text-[11px] text-slate-400 line-clamp-1">${r.address}</p>
           </div>
         </div>
       `).join('');
     }
 
-    function filterDistrict(district) {
-      if (district === 'all') renderList(restaurants);
-      else renderList(restaurants.filter(r => r.district === district));
+    // Mở Modal Chi tiết Quán
+    function openDetailModal(id) {
+      const res = allRestaurants.find(r => r.id === id);
+      if(!res) return;
+
+      document.getElementById('detail-name').innerText = res.name;
+      document.getElementById('detail-category').innerText = `${res.district} • ${res.foodName}`;
+      document.getElementById('detail-address').innerText = res.address;
+      document.getElementById('detail-rating').innerText = res.rating;
+      document.getElementById('detail-review').innerText = res.review;
+      document.getElementById('detail-img').src = res.img;
+      document.getElementById('btn-gmap').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(res.name + ' ' + res.address)}`;
+
+      // Tính khoảng cách
+      if (userCoords) {
+        const km = calcDistance(userCoords.lat, userCoords.lng, res.lat, res.lng).toFixed(1);
+        document.getElementById('detail-distance').innerText = `${km} km tính từ vị trí bạn`;
+      } else {
+        document.getElementById('detail-distance').innerText = `Chưa bật định vị GPS`;
+      }
+
+      const btnSave = document.getElementById('btn-save-restaurant');
+      const isSaved = savedRestaurantIds.includes(res.id);
+      btnSave.innerHTML = isSaved ? `<i class="fa-solid fa-bookmark text-purple-600"></i> Đã Lưu` : `<i class="fa-regular fa-bookmark"></i> Lưu Quán`;
+      btnSave.onclick = () => toggleSaveRes(res.id);
+
+      document.getElementById('detail-modal').classList.remove('hidden');
     }
 
-    function switchTab(tab) {
-      document.getElementById('tab-home').classList.toggle('hidden', tab !== 'home');
-      document.getElementById('tab-wheel').classList.toggle('hidden', tab !== 'wheel');
-      document.getElementById('nav-home').className = tab === 'home' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
-      document.getElementById('nav-wheel').className = tab === 'wheel' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
-      if(tab === 'wheel') drawWheel();
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
     }
 
-    function toggleModal() {
-      document.getElementById('add-modal').classList.toggle('hidden');
+    // Tính khoảng cách Haversine (km)
+    function calcDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    function addRestaurant() {
-      const name = document.getElementById('input-name').value;
-      const district = document.getElementById('input-district').value;
-      const rating = document.getElementById('input-rating').value || '4.0';
-      const img = document.getElementById('input-img').value || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500';
-      if(name && district) {
-        restaurants.push({ id: Date.now(), name, district, rating, img });
-        renderList();
-        toggleModal();
-        alert('Đã thêm quán thành công!');
+    // Lưu / Bỏ lưu Quán
+    function toggleSaveRes(id) {
+      if(savedRestaurantIds.includes(id)) {
+        savedRestaurantIds = savedRestaurantIds.filter(i => i !== id);
+      } else {
+        savedRestaurantIds.push(id);
+      }
+      localStorage.setItem('saved_res', JSON.stringify(savedRestaurantIds));
+      openDetailModal(id);
+      renderSaved();
+    }
+
+    function renderSaved() {
+      const savedList = allRestaurants.filter(r => savedRestaurantIds.includes(r.id));
+      const container = document.getElementById('saved-list');
+      if(savedList.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">Chưa có quán nào được lưu.</p>`;
+        return;
+      }
+      container.innerHTML = savedList.map(r => `
+        <div onclick="openDetailModal(${r.id})" class="bg-white rounded-2xl p-3 border flex gap-3 items-center">
+          <img src="${r.img}" class="w-14 h-14 rounded-xl object-cover">
+          <div class="flex-1">
+            <h4 class="font-bold text-xs">${r.name}</h4>
+            <p class="text-[10px] text-slate-400">${r.district} • ⭐ ${r.rating}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Nhật ký Upload
+    function toggleUploadModal() {
+      document.getElementById('upload-modal').classList.toggle('hidden');
+    }
+
+    function saveLog() {
+      const name = document.getElementById('log-name').value;
+      const price = document.getElementById('log-price').value;
+      const note = document.getElementById('log-note').value;
+      const fileInput = document.getElementById('log-file');
+
+      if(!name) { alert('Vui lòng nhập tên quán!'); return; }
+
+      const reader = new FileReader();
+      const processSave = (imgData) => {
+        userLogs.unshift({
+          id: Date.now(),
+          name, price, note,
+          date: new Date().toLocaleDateString('vi-VN'),
+          img: imgData || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'
+        });
+        localStorage.setItem('user_logs', JSON.stringify(userLogs));
+        renderLogs();
+        toggleUploadModal();
+      };
+
+      if(fileInput.files && fileInput.files[0]) {
+        reader.onload = e => processSave(e.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        processSave(null);
       }
     }
 
-    // Canvas Wheel Logic
+    function renderLogs() {
+      const container = document.getElementById('user-logs-list');
+      if(userLogs.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">Bạn chưa lưu nhật ký ăn uống nào.</p>`;
+        return;
+      }
+      container.innerHTML = userLogs.map(l => `
+        <div class="bg-white rounded-3xl p-4 border space-y-2 shadow-sm">
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-xs text-slate-800">${l.name}</h4>
+            <span class="text-[10px] text-slate-400">${l.date}</span>
+          </div>
+          <p class="text-[11px] text-purple-600 font-bold">💰 Tầm giá: ${l.price || 'Chưa nhập'}</p>
+          <p class="text-xs text-slate-600 bg-slate-50 p-2 rounded-xl">${l.note || 'Không có ghi chú'}</p>
+          <img src="${l.img}" class="w-full h-36 object-cover rounded-2xl">
+        </div>
+      `).join('');
+    }
+
+    // Switch Tab Lịch sử Subtabs
+    function switchHistorySubTab(sub) {
+      document.getElementById('subtab-logs').classList.toggle('hidden', sub !== 'logs');
+      document.getElementById('subtab-saved').classList.toggle('hidden', sub !== 'saved');
+      document.getElementById('subnav-logs').className = sub === 'logs' ? 'flex-1 py-2 rounded-xl bg-white text-purple-600 shadow-sm transition' : 'flex-1 py-2 rounded-xl text-slate-500 transition';
+      document.getElementById('subnav-saved').className = sub === 'saved' ? 'flex-1 py-2 rounded-xl bg-white text-purple-600 shadow-sm transition' : 'flex-1 py-2 rounded-xl text-slate-500 transition';
+    }
+
+    // Switch Tab Chính Bottom Nav
+    function switchTab(tab) {
+      document.getElementById('tab-home').classList.toggle('hidden', tab !== 'home');
+      document.getElementById('tab-history').classList.toggle('hidden', tab !== 'history');
+      document.getElementById('tab-wheel').classList.toggle('hidden', tab !== 'wheel');
+
+      document.getElementById('nav-home').className = tab === 'home' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
+      document.getElementById('nav-history').className = tab === 'history' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
+      document.getElementById('nav-wheel').className = tab === 'wheel' ? 'flex flex-col items-center text-purple-600' : 'flex flex-col items-center text-slate-400';
+
+      if(tab === 'wheel') drawWheel();
+    }
+
+    // VÒNG QUAY RANDOM 10 MÓN
+    function initRandomWheel() {
+      // Shuffled array
+      const shuffled = [...masterFoodPool].sort(() => 0.5 - Math.random());
+      currentWheelFoods = shuffled.slice(0, 10);
+    }
+
     function drawWheel() {
       const canvas = document.getElementById('wheel');
       const ctx = canvas.getContext('2d');
-      const colors = ['#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#38bdf8'];
-      const slice = (2 * Math.PI) / restaurants.length;
+      const colors = ['#8b5cf6', '#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#fb7185', '#38bdf8', '#818cf8', '#a855f7', '#d946ef'];
+      const slice = (2 * Math.PI) / currentWheelFoods.length;
 
-      ctx.clearRect(0, 0, 260, 260);
-      restaurants.forEach((res, i) => {
+      ctx.clearRect(0, 0, 280, 280);
+      currentWheelFoods.forEach((food, i) => {
         ctx.beginPath();
         ctx.fillStyle = colors[i % colors.length];
-        ctx.moveTo(130, 130);
-        ctx.arc(130, 130, 130, i * slice, (i + 1) * slice);
+        ctx.moveTo(140, 140);
+        ctx.arc(140, 140, 140, i * slice, (i + 1) * slice);
         ctx.fill();
 
         ctx.save();
-        ctx.translate(130, 130);
+        ctx.translate(140, 140);
         ctx.rotate(i * slice + slice / 2);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText(res.name.substring(0, 10), 40, 5);
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(food.substring(0, 12), 45, 4);
         ctx.restore();
       });
     }
@@ -175,15 +465,40 @@
       const randomDegree = Math.floor(1800 + Math.random() * 360);
       currentRotation += randomDegree;
       wheel.style.transform = `rotate(${currentRotation}deg)`;
-      
-      setTimeout(() => {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        const selectedIndex = Math.floor((360 - (currentRotation % 360)) / (360 / restaurants.length)) % restaurants.length;
-        document.getElementById('wheel-result').innerText = `🎉 Ăn ngay: ${restaurants[selectedIndex].name}!`;
-      }, 3000);
-    }
 
-    renderList();
+      document.getElementById('wheel-result-box').classList.add('hidden');
+
+      setTimeout(() => {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        
+        const actualDeg = currentRotation % 360;
+        const sliceDeg = 360 / currentWheelFoods.length;
+        const selectedIndex = Math.floor((360 - actualDeg) / sliceDeg) % currentWheelFoods.length;
+        const selectedFood = currentWheelFoods[selectedIndex];
+
+        document.getElementById('wheel-result-title').innerText = selectedFood;
+
+        // Tìm quán đề xuất
+        const matches = allRestaurants.filter(r => r.foodName.toLowerCase().includes(selectedFood.toLowerCase()) || selectedFood.toLowerCase().includes(r.foodName.toLowerCase()));
+        
+        const recContainer = document.getElementById('wheel-recommend-list');
+        if(matches.length > 0) {
+          recContainer.innerHTML = matches.map(r => `
+            <div onclick="openDetailModal(${r.id})" class="p-2 bg-slate-50 rounded-xl flex justify-between items-center text-xs">
+              <div>
+                <p class="font-bold text-slate-800">${r.name}</p>
+                <p class="text-[10px] text-slate-400">${r.address}</p>
+              </div>
+              <span class="text-amber-500 font-bold">⭐ ${r.rating}</span>
+            </div>
+          `).join('');
+        } else {
+          recContainer.innerHTML = `<p class="text-xs text-slate-400">Gợi ý tìm kiếm trên Google Maps cho món ${selectedFood}.</p>`;
+        }
+
+        document.getElementById('wheel-result-box').classList.remove('hidden');
+      }, 3600);
+    }
   </script>
 </body>
 </html>

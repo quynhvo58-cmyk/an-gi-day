@@ -29,12 +29,10 @@
 
   <!-- TAB 1: KHÁM PHÁ -->
   <div id="tab-home" class="p-5 space-y-5">
-    
     <!-- Bộ Lọc Dropdown -->
     <div class="bg-white p-4 rounded-3xl shadow-sm space-y-3 border border-purple-100">
       <h2 class="text-xs font-bold text-purple-600 uppercase tracking-wider"><i class="fa-solid fa-filter mr-1"></i> Bộ lọc tìm kiếm</h2>
       <div class="grid grid-cols-2 gap-2">
-        <!-- Dropdown Quận -->
         <div>
           <label class="text-[11px] text-slate-400 font-semibold mb-1 block">Khu vực / Quận</label>
           <select id="filter-district" class="w-full p-2.5 bg-slate-100 rounded-xl text-xs font-semibold outline-none border border-transparent focus:border-purple-400">
@@ -52,7 +50,6 @@
           </select>
         </div>
 
-        <!-- Dropdown Loại đồ ăn -->
         <div>
           <label class="text-[11px] text-slate-400 font-semibold mb-1 block">Loại món ăn</label>
           <select id="filter-category" class="w-full p-2.5 bg-slate-100 rounded-xl text-xs font-semibold outline-none border border-transparent focus:border-purple-400">
@@ -72,7 +69,7 @@
       </button>
     </div>
 
-    <!-- Danh Sách Quán Kết Quả -->
+    <!-- Danh Sách Quán -->
     <div class="space-y-3">
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Kết quả đề xuất (<span id="count-res">0</span>)</h3>
       <div id="food-list" class="space-y-3"></div>
@@ -81,7 +78,6 @@
 
   <!-- TAB 2: LỊCH SỬ & NHẬT KÝ -->
   <div id="tab-history" class="p-5 space-y-5 hidden">
-    <!-- Sub Nav Lịch sử -->
     <div class="flex bg-slate-200/60 p-1 rounded-2xl text-xs font-bold">
       <button onclick="switchHistorySubTab('logs')" id="subnav-logs" class="flex-1 py-2 rounded-xl bg-white text-purple-600 shadow-sm transition">
         📸 Nhật Ký Đã Ăn
@@ -91,16 +87,13 @@
       </button>
     </div>
 
-    <!-- Subtab 1: Nhật ký upload -->
     <div id="subtab-logs" class="space-y-4">
       <button onclick="toggleUploadModal()" class="w-full py-3 bg-white border-2 border-dashed border-purple-300 rounded-2xl text-purple-600 text-xs font-bold flex items-center justify-center gap-2 hover:bg-purple-50 transition">
         <i class="fa-solid fa-cloud-arrow-up text-lg"></i> Check-in Quán Vừa Ăn
       </button>
-
       <div id="user-logs-list" class="space-y-3"></div>
     </div>
 
-    <!-- Subtab 2: Quán đã bookmark -->
     <div id="subtab-saved" class="space-y-3 hidden">
       <div id="saved-list" class="space-y-3"></div>
     </div>
@@ -159,20 +152,16 @@
         </div>
         <button onclick="closeDetailModal()" class="text-slate-400 text-2xl">&times;</button>
       </div>
-      
       <img id="detail-img" class="w-full h-44 object-cover rounded-2xl">
-      
       <div class="space-y-2 text-xs text-slate-600">
         <p><i class="fa-solid fa-location-dot text-purple-500 w-4"></i> <span id="detail-address"></span></p>
         <p><i class="fa-solid fa-star text-amber-400 w-4"></i> <span id="detail-rating"></span> trên Google Maps</p>
         <p><i class="fa-solid fa-route text-blue-500 w-4"></i> Khoảng cách: <strong id="detail-distance" class="text-slate-800">Đang tính...</strong></p>
       </div>
-
       <div class="bg-slate-50 p-3 rounded-2xl border space-y-1">
         <p class="text-[11px] font-bold text-slate-700"><i class="fa-solid fa-quote-left text-purple-400 mr-1"></i> Review nổi bật từ Google:</p>
         <p id="detail-review" class="text-xs text-slate-500 italic"></p>
       </div>
-
       <div class="flex gap-2 pt-2">
         <button id="btn-save-restaurant" onclick="" class="flex-1 py-3 bg-purple-100 text-purple-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1">
           <i class="fa-regular fa-bookmark"></i> Lưu Quán
@@ -184,7 +173,7 @@
     </div>
   </div>
 
-  <!-- MODAL CHECK-IN / UPLOAD QUÁN -->
+  <!-- MODAL CHECK-IN -->
   <div id="upload-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-3 animate-slide-up">
       <div class="flex justify-between items-center">
@@ -201,7 +190,7 @@
         <input id="log-file" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200">
       </div>
 
-      <button onclick="saveLog()" class="w-full py-3 bg-purple-600 text-white font-bold text-xs rounded-xl shadow-md">
+      <button id="btn-submit-log" onclick="saveLog()" class="w-full py-3 bg-purple-600 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition">
         Lưu Nhật Ký
       </button>
     </div>
@@ -209,38 +198,32 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // Dữ liệu mẫu cơ sở dữ liệu các quán ăn
     const allRestaurants = [
-      { id: 1, name: 'Bánh Mì Huỳnh Hoa', district: 'Quận 1', cat: 'kho', foodName: 'Bánh Mì', rating: 4.5, address: '26 Lê Thị Riêng, P. Bến Thành, Q.1', lat: 10.7713, lng: 106.6925, img: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500', review: 'Bánh mì siêu đầy đặn, pate ngon xuất sắc dù giá hơi cao.' },
-      { id: 2, name: 'Phở Hòa Pasteur', district: 'Quận 3', cat: 'nuoc', foodName: 'Phở Bò', rating: 4.6, address: '260C Pasteur, Phường 8, Q.3', lat: 10.7876, lng: 106.6892, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500', review: 'Nước dùng thanh ngọt chuẩn vị truyền thống, thịt bò tươi ngon.' },
-      { id: 3, name: 'Cơm Tấm Ba Há', district: 'Bình Thạnh', cat: 'kho', foodName: 'Cơm Tấm', rating: 4.8, address: '389 Vũ Tùng, Phường 2, Bình Thạnh', lat: 10.8012, lng: 106.6985, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500', review: 'Sườn nướng thảo mộc siêu thơm, chả trứng siêu béo ngậy.' },
-      { id: 4, name: 'Bún Bò Huế Út Hưng', district: 'Quận 10', cat: 'nuoc', foodName: 'Bún Bò Huế', rating: 4.7, address: '606/88 3 Tháng 2, Phường 14, Q.10', lat: 10.7675, lng: 106.6598, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500', review: 'Nước lèo đậm đà mùi mắm ruốc, sa tế thơm nức mũi.' },
-      { id: 5, name: 'Mì Cay Sasin', district: 'Thủ Đức', cat: 'han', foodName: 'Mì Cay Hàn Quốc', rating: 4.4, address: '255 Võ Văn Ngân, Thủ Đức', lat: 10.8505, lng: 106.7719, img: 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=500', review: 'Mì cay đậm vị, hải sản tươi, nhiều cấp độ thử thách.' },
-      { id: 6, name: 'Dimsum Tiệm Bánh Bao', district: 'Quận 5', cat: 'trung', foodName: 'Dimsum Trung Hoa', rating: 4.6, address: '122 Nguyễn Trãi, Q.5', lat: 10.7548, lng: 106.6782, img: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500', review: 'Há háo vỏ mỏng nhân tôm giòn bụp, bánh bao kim sa siêu ngon.' },
-      { id: 7, name: 'Pizza 4P\'s', district: 'Quận 1', cat: 'tay', foodName: 'Pizza / Đồ Tây', rating: 4.9, address: '8/15 Lê Thánh Tôn, Q.1', lat: 10.7788, lng: 106.7032, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500', review: 'Pizza phô mai Burrata ngon trần đời, phục vụ tuyệt vời.' },
-      { id: 8, name: 'Hủ Tiếu Nam Vang Nhân Quán', district: 'Tân Bình', cat: 'nuoc', foodName: 'Hủ Tiếu Nam Vang', rating: 4.5, address: '122 Âu Cơ, Tân Bình', lat: 10.7725, lng: 106.6490, img: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=500', review: 'Hủ tiếu khô trộn sốt đậm đà, tôm thịt tươi roi rói.' }
+      { id: 1, name: 'Bánh Mì Huỳnh Hoa', district: 'Quận 1', cat: 'kho', foodName: 'Bánh Mì', rating: 4.5, address: '26 Lê Thị Riêng, Q.1', lat: 10.7713, lng: 106.6925, img: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500', review: 'Bánh mì siêu đầy đặn, pate béo ngon đặc trưng.' },
+      { id: 2, name: 'Phở Hòa Pasteur', district: 'Quận 3', cat: 'nuoc', foodName: 'Phở Bò', rating: 4.6, address: '260C Pasteur, Q.3', lat: 10.7876, lng: 106.6892, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500', review: 'Nước dùng thanh ngọt chuẩn vị truyền thống.' },
+      { id: 3, name: 'Cơm Tấm Ba Há', district: 'Bình Thạnh', cat: 'kho', foodName: 'Cơm Tấm', rating: 4.8, address: '389 Vũ Tùng, Bình Thạnh', lat: 10.8012, lng: 106.6985, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500', review: 'Sườn nướng thảo mộc thơm nức, chả trứng béo ngậy.' },
+      { id: 4, name: 'Cơm Tấm Kiều Giang', district: 'Quận 12', cat: 'kho', foodName: 'Cơm Tấm', rating: 4.6, address: '63/2 Lê Văn Khương, Q.12', lat: 10.8651, lng: 106.6542, img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500', review: 'Sườn cây nướng đậm vị, cơm tấm dẻo ngon chuẩn vị Q12.' },
+      { id: 5, name: 'Bún Bò Huế Út Hưng', district: 'Quận 10', cat: 'nuoc', foodName: 'Bún Bò Huế', rating: 4.7, address: '606/88 3 Tháng 2, Q.10', lat: 10.7675, lng: 106.6598, img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500', review: 'Nước lèo đậm đà mắm ruốc, sa tế thơm cay.' },
+      { id: 6, name: 'Mì Cay Sasin Thủ Đức', district: 'Thủ Đức', cat: 'han', foodName: 'Mì Cay Hàn Quốc', rating: 4.4, address: '255 Võ Văn Ngân, Thủ Đức', lat: 10.8505, lng: 106.7719, img: 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=500', review: 'Mì cay đậm vị, nhiều hải sản tươi ngon.' },
+      { id: 7, name: 'Dimsum Tiệm Bánh Bao', district: 'Quận 5', cat: 'trung', foodName: 'Dimsum Trung Hoa', rating: 4.6, address: '122 Nguyễn Trãi, Q.5', lat: 10.7548, lng: 106.6782, img: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500', review: 'Há cáo vỏ mỏng nhân tôm giòn béo.' },
+      { id: 8, name: 'Pizza 4P\'s', district: 'Quận 1', cat: 'tay', foodName: 'Pizza / Đồ Tây', rating: 4.9, address: '8/15 Lê Thánh Tôn, Q.1', lat: 10.7788, lng: 106.7032, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500', review: 'Pizza phô mai tươi xuất sắc, không gian tuyệt đẹp.' },
+      { id: 9, name: 'Cà Phê Muối Chú Long', district: 'Quận 12', cat: 'an_vat', foodName: 'Cà Phê Muối', rating: 4.7, address: 'Nguyễn Ảnh Thủ, Q.12', lat: 10.8710, lng: 106.6210, img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', review: 'Lớp kem muối béo ngậy kết hợp cà phê thơm nức.' },
+      { id: 10, name: 'Lẩu Thái TomYum', district: 'Tân Bình', cat: 'nuoc', foodName: 'Lẩu Thái', rating: 4.5, address: '45 Cộng Hòa, Tân Bình', lat: 10.8015, lng: 106.6521, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=500', review: 'Nước lẩu chua cay chuẩn vị Thái, đồ nhúng tươi ngon.' }
     ];
 
-    // Kho Món Ăn Cho Vòng Quay (Sẽ random 10 món)
-    const masterFoodPool = [
-      'Bánh Mì', 'Phở Bò', 'Cơm Tấm', 'Bún Bò Huế', 'Mì Cay Hàn Quốc', 
-      'Dimsum Trung Hoa', 'Pizza / Đồ Tây', 'Hủ Tiếu Nam Vang', 'Lẩu Thái', 'Bún Thịt Nướng',
-      'Gà Rán', 'Bún Đậu Mắm Tôm', 'Cà Phê Muối', 'Trà Sữa'
-    ];
+    const masterFoodPool = ['Bánh Mì', 'Phở Bò', 'Cơm Tấm', 'Bún Bò Huế', 'Mì Cay Hàn Quốc', 'Dimsum Trung Hoa', 'Pizza / Đồ Tây', 'Hủ Tiếu Nam Vang', 'Lẩu Thái', 'Cà Phê Muối'];
 
     let currentWheelFoods = [];
     let savedRestaurantIds = JSON.parse(localStorage.getItem('saved_res') || '[]');
     let userLogs = JSON.parse(localStorage.getItem('user_logs') || '[]');
     let userCoords = null;
 
-    // Lấy vị trí GPS hiện tại
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
         userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       });
     }
 
-    // Khởi tạo app
     window.onload = function() {
       searchRestaurants();
       initRandomWheel();
@@ -248,7 +231,6 @@
       renderSaved();
     };
 
-    // Tìm kiếm / Lọc danh sách
     function searchRestaurants() {
       const dist = document.getElementById('filter-district').value;
       const cat = document.getElementById('filter-category').value;
@@ -282,7 +264,6 @@
       `).join('');
     }
 
-    // Mở Modal Chi tiết Quán
     function openDetailModal(id) {
       const res = allRestaurants.find(r => r.id === id);
       if(!res) return;
@@ -295,7 +276,6 @@
       document.getElementById('detail-img').src = res.img;
       document.getElementById('btn-gmap').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(res.name + ' ' + res.address)}`;
 
-      // Tính khoảng cách
       if (userCoords) {
         const km = calcDistance(userCoords.lat, userCoords.lng, res.lat, res.lng).toFixed(1);
         document.getElementById('detail-distance').innerText = `${km} km tính từ vị trí bạn`;
@@ -315,7 +295,6 @@
       document.getElementById('detail-modal').classList.add('hidden');
     }
 
-    // Tính khoảng cách Haversine (km)
     function calcDistance(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -324,7 +303,6 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    // Lưu / Bỏ lưu Quán
     function toggleSaveRes(id) {
       if(savedRestaurantIds.includes(id)) {
         savedRestaurantIds = savedRestaurantIds.filter(i => i !== id);
@@ -354,9 +332,39 @@
       `).join('');
     }
 
-    // Nhật ký Upload
     function toggleUploadModal() {
       document.getElementById('upload-modal').classList.toggle('hidden');
+    }
+
+    // HÀM TỰ ĐỘNG NÉN ẢNH ĐỂ LƯU MƯỢT MÀ KHÔNG BỊ TRÀN BỘ NHỚ
+    function compressImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 800; // Nén tối đa kích thước 800px
+
+          if (width > height && width > maxDim) {
+            height *= maxDim / width;
+            width = maxDim;
+          } else if (height > maxDim) {
+            width *= maxDim / height;
+            height = maxDim;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // Nén chất lượng 70%
+          callback(compressedBase64);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     function saveLog() {
@@ -364,27 +372,53 @@
       const price = document.getElementById('log-price').value;
       const note = document.getElementById('log-note').value;
       const fileInput = document.getElementById('log-file');
+      const btn = document.getElementById('btn-submit-log');
 
       if(!name) { alert('Vui lòng nhập tên quán!'); return; }
 
-      const reader = new FileReader();
-      const processSave = (imgData) => {
-        userLogs.unshift({
+      btn.innerText = 'Đang lưu...';
+      btn.disabled = true;
+
+      const executeSave = (imgData) => {
+        const newLog = {
           id: Date.now(),
           name, price, note,
           date: new Date().toLocaleDateString('vi-VN'),
           img: imgData || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'
-        });
-        localStorage.setItem('user_logs', JSON.stringify(userLogs));
+        };
+        userLogs.unshift(newLog);
+        try {
+          localStorage.setItem('user_logs', JSON.stringify(userLogs));
+        } catch (e) {
+          alert('Bộ nhớ đầy, hãy thử dùng ảnh nhẹ hơn nhé!');
+        }
+        
+        // Reset form
+        document.getElementById('log-name').value = '';
+        document.getElementById('log-price').value = '';
+        document.getElementById('log-note').value = '';
+        fileInput.value = '';
+        btn.innerText = 'Lưu Nhật Ký';
+        btn.disabled = false;
+
         renderLogs();
         toggleUploadModal();
       };
 
       if(fileInput.files && fileInput.files[0]) {
-        reader.onload = e => processSave(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
+        compressImage(fileInput.files[0], (compressedData) => {
+          executeSave(compressedData);
+        });
       } else {
-        processSave(null);
+        executeSave(null);
+      }
+    }
+
+    function deleteLog(id) {
+      if(confirm('Bạn có muốn xóa nhật ký này không?')) {
+        userLogs = userLogs.filter(l => l.id !== id);
+        localStorage.setItem('user_logs', JSON.stringify(userLogs));
+        renderLogs();
       }
     }
 
@@ -395,19 +429,21 @@
         return;
       }
       container.innerHTML = userLogs.map(l => `
-        <div class="bg-white rounded-3xl p-4 border space-y-2 shadow-sm">
-          <div class="flex justify-between items-center">
+        <div class="bg-white rounded-3xl p-4 border space-y-2 shadow-sm relative">
+          <button onclick="deleteLog(${l.id})" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 text-sm">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          <div class="flex justify-between items-center pr-6">
             <h4 class="font-bold text-xs text-slate-800">${l.name}</h4>
             <span class="text-[10px] text-slate-400">${l.date}</span>
           </div>
           <p class="text-[11px] text-purple-600 font-bold">💰 Tầm giá: ${l.price || 'Chưa nhập'}</p>
           <p class="text-xs text-slate-600 bg-slate-50 p-2 rounded-xl">${l.note || 'Không có ghi chú'}</p>
-          <img src="${l.img}" class="w-full h-36 object-cover rounded-2xl">
+          <img src="${l.img}" class="w-full h-40 object-cover rounded-2xl bg-slate-100">
         </div>
       `).join('');
     }
 
-    // Switch Tab Lịch sử Subtabs
     function switchHistorySubTab(sub) {
       document.getElementById('subtab-logs').classList.toggle('hidden', sub !== 'logs');
       document.getElementById('subtab-saved').classList.toggle('hidden', sub !== 'saved');
@@ -415,7 +451,6 @@
       document.getElementById('subnav-saved').className = sub === 'saved' ? 'flex-1 py-2 rounded-xl bg-white text-purple-600 shadow-sm transition' : 'flex-1 py-2 rounded-xl text-slate-500 transition';
     }
 
-    // Switch Tab Chính Bottom Nav
     function switchTab(tab) {
       document.getElementById('tab-home').classList.toggle('hidden', tab !== 'home');
       document.getElementById('tab-history').classList.toggle('hidden', tab !== 'history');
@@ -428,11 +463,8 @@
       if(tab === 'wheel') drawWheel();
     }
 
-    // VÒNG QUAY RANDOM 10 MÓN
     function initRandomWheel() {
-      // Shuffled array
-      const shuffled = [...masterFoodPool].sort(() => 0.5 - Math.random());
-      currentWheelFoods = shuffled.slice(0, 10);
+      currentWheelFoods = [...masterFoodPool];
     }
 
     function drawWheel() {
@@ -462,8 +494,9 @@
     let currentRotation = 0;
     function spinWheel() {
       const wheel = document.getElementById('wheel');
-      const randomDegree = Math.floor(1800 + Math.random() * 360);
-      currentRotation += randomDegree;
+      const extraDegree = Math.floor(Math.random() * 360);
+      const totalSpin = 1800 + extraDegree;
+      currentRotation += totalSpin;
       wheel.style.transform = `rotate(${currentRotation}deg)`;
 
       document.getElementById('wheel-result-box').classList.add('hidden');
@@ -471,29 +504,41 @@
       setTimeout(() => {
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
         
-        const actualDeg = currentRotation % 360;
-        const sliceDeg = 360 / currentWheelFoods.length;
-        const selectedIndex = Math.floor((360 - actualDeg) / sliceDeg) % currentWheelFoods.length;
+        const sliceAngle = 360 / currentWheelFoods.length;
+        const netRotation = (currentRotation % 360);
+        let pointerAngle = (270 - netRotation) % 360;
+        if (pointerAngle < 0) pointerAngle += 360;
+
+        const selectedIndex = Math.floor(pointerAngle / sliceAngle);
         const selectedFood = currentWheelFoods[selectedIndex];
 
         document.getElementById('wheel-result-title').innerText = selectedFood;
 
-        // Tìm quán đề xuất
-        const matches = allRestaurants.filter(r => r.foodName.toLowerCase().includes(selectedFood.toLowerCase()) || selectedFood.toLowerCase().includes(r.foodName.toLowerCase()));
+        const matches = allRestaurants.filter(r => 
+          r.foodName.toLowerCase().includes(selectedFood.toLowerCase()) || 
+          selectedFood.toLowerCase().includes(r.foodName.toLowerCase())
+        );
         
         const recContainer = document.getElementById('wheel-recommend-list');
         if(matches.length > 0) {
           recContainer.innerHTML = matches.map(r => `
-            <div onclick="openDetailModal(${r.id})" class="p-2 bg-slate-50 rounded-xl flex justify-between items-center text-xs">
+            <div onclick="openDetailModal(${r.id})" class="p-2.5 bg-slate-50 rounded-2xl flex justify-between items-center text-xs border hover:bg-purple-50 transition cursor-pointer">
               <div>
                 <p class="font-bold text-slate-800">${r.name}</p>
-                <p class="text-[10px] text-slate-400">${r.address}</p>
+                <p class="text-[10px] text-slate-400">${r.district} • ${r.address}</p>
               </div>
               <span class="text-amber-500 font-bold">⭐ ${r.rating}</span>
             </div>
           `).join('');
         } else {
-          recContainer.innerHTML = `<p class="text-xs text-slate-400">Gợi ý tìm kiếm trên Google Maps cho món ${selectedFood}.</p>`;
+          recContainer.innerHTML = `
+            <div class="p-3 bg-slate-50 rounded-2xl text-xs text-slate-500 space-y-1">
+              <p>Chưa có quán mẫu sẵn trong DB. Bấm bên dưới để tìm trên Google Maps:</p>
+              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedFood)}" target="_blank" class="text-purple-600 font-bold underline inline-block mt-1">
+                🔍 Tìm quán ${selectedFood} gần bạn trên Google Maps
+              </a>
+            </div>
+          `;
         }
 
         document.getElementById('wheel-result-box').classList.remove('hidden');
